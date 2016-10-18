@@ -1,6 +1,8 @@
 package net.cpollet.junit5gherkin.bindings;
 
 import net.cpollet.junit5gherkin.annotations.Given;
+import net.cpollet.junit5gherkin.annotations.Then;
+import net.cpollet.junit5gherkin.annotations.When;
 import org.junit.jupiter.api.Assertions;
 
 /**
@@ -16,13 +18,13 @@ public class StepBindings {
         testContext.b = 1;
     }
 
-    @Given("When: add the two integers")
+    @When("When: add the two integers")
     public void add() {
         System.out.println("Let result = a + b");
         testContext.result = testContext.a + testContext.b;
     }
 
-    @Given("Then: the result is 2")
+    @Then("Then: the result is 2")
     public void result() {
         System.out.println("Result should be 2");
         Assertions.assertEquals(2, testContext.result);
