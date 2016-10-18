@@ -3,6 +3,7 @@ package net.cpollet.junit5gherkin;
 /**
  * Created by cpollet on 18.10.16.
  */
+@SuppressWarnings("unused")
 public class ColorizedString {
     private static final String PREFIX = "\u001b[";
     private static final String SUFFIX = "m";

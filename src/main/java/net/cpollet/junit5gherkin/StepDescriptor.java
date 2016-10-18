@@ -23,7 +23,7 @@ public class StepDescriptor {
             FailFunction failFunction = () -> Assertions.fail(String.format("Unable to find binding for '%s'", message));
             return new StepDescriptor(failFunction, failFunction.getClass().getMethod("fail"), message);
         } catch (NoSuchMethodException e) {
-            // this will never happen
+            // this cannot happen since the method we get exists by design
             throw new Error(e);
         }
     }

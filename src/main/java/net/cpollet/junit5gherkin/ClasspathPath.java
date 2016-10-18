@@ -1,8 +1,10 @@
 package net.cpollet.junit5gherkin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -23,16 +25,20 @@ public class ClasspathPath implements Path {
         this.path = path;
     }
 
-    private Path get() {
+    private Path get() throws FileNotFoundException {
         if (cachedPath == null) {
             cachedPath = Paths.get(absolutePath());
         }
         return cachedPath;
     }
 
-    private String absolutePath() {
+    private String absolutePath() throws FileNotFoundException {
         if (path.startsWith("classpath:")) {
-            return getClass().getClassLoader().getResource(path.replaceFirst("classpath:/*", "")).getPath();
+            URL resource = getClass().getClassLoader().getResource(path.replaceFirst("classpath:/*", ""));
+            if (resource == null) {
+                throw new FileNotFoundException("File does not exist: " + path);
+            }
+            return resource.getPath();
         }
 
         return path;
@@ -40,102 +46,182 @@ public class ClasspathPath implements Path {
 
     @Override
     public FileSystem getFileSystem() {
-        return get().getFileSystem();
+        try {
+            return get().getFileSystem();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean isAbsolute() {
-        return get().isAbsolute();
+        try {
+            return get().isAbsolute();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path getRoot() {
-        return get().getRoot();
+        try {
+            return get().getRoot();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path getFileName() {
-        return get().getFileName();
+        try {
+            return get().getFileName();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path getParent() {
-        return get().getParent();
+        try {
+            return get().getParent();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int getNameCount() {
-        return get().getNameCount();
+        try {
+            return get().getNameCount();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path getName(int index) {
-        return get().getName(index);
+        try {
+            return get().getName(index);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path subpath(int beginIndex, int endIndex) {
-        return get().subpath(beginIndex, endIndex);
+        try {
+            return get().subpath(beginIndex, endIndex);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean startsWith(Path other) {
-        return get().startsWith(other);
+        try {
+            return get().startsWith(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean startsWith(String other) {
-        return get().startsWith(other);
+        try {
+            return get().startsWith(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean endsWith(Path other) {
-        return get().endsWith(other);
+        try {
+            return get().endsWith(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean endsWith(String other) {
-        return get().endsWith(other);
+        try {
+            return get().endsWith(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path normalize() {
-        return get().normalize();
+        try {
+            return get().normalize();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path resolve(Path other) {
-        return get().resolve(other);
+        try {
+            return get().resolve(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path resolve(String other) {
-        return get().resolve(other);
+        try {
+            return get().resolve(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path resolveSibling(Path other) {
-        return get().resolveSibling(other);
+        try {
+            return get().resolveSibling(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path resolveSibling(String other) {
-        return get().resolveSibling(other);
+        try {
+            return get().resolveSibling(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path relativize(Path other) {
-        return get().relativize(other);
+        try {
+            return get().relativize(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public URI toUri() {
-        return get().toUri();
+        try {
+            return get().toUri();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Path toAbsolutePath() {
-        return get().toAbsolutePath();
+        try {
+            return get().toAbsolutePath();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -145,7 +231,11 @@ public class ClasspathPath implements Path {
 
     @Override
     public File toFile() {
-        return get().toFile();
+        try {
+            return get().toFile();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -160,26 +250,46 @@ public class ClasspathPath implements Path {
 
     @Override
     public Iterator<Path> iterator() {
-        return get().iterator();
+        try {
+            return get().iterator();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int compareTo(Path other) {
-        return get().compareTo(other);
+        try {
+            return get().compareTo(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean equals(Object other) {
-        return get().equals(other);
+        try {
+            return get().equals(other);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int hashCode() {
-        return get().hashCode();
+        try {
+            return get().hashCode();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String toString() {
-        return get().toString();
+        try {
+            return get().toString();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
