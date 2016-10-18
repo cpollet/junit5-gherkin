@@ -1,5 +1,6 @@
 package net.cpollet.junit5gherkin;
 
+import net.cpollet.junit5gherkin.annotations.Bindings;
 import net.cpollet.junit5gherkin.annotations.Given;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,7 +12,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +22,6 @@ import java.util.stream.Collectors;
  */
 public abstract class GherkinSuite {
     private static List<String> steps;
-
 
     @BeforeAll
     public static void setUpSteps() {
@@ -34,77 +36,70 @@ public abstract class GherkinSuite {
     @DisplayName("Scenarios")
     @TestFactory
     Collection<DynamicTest> testSuite() {
-        List<StepDescriptor> stepDescriptors = steps.stream()
-                .map(this::findMethod)
-                .collect(Collectors.toList());
+        try {
+            Class[] bindingClasses = getBindingClasses();
+            Map<Class, Object> bindings = instantiateBindings(bindingClasses);
 
-        List<DynamicTest> tests = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            String scenario = String.format("Scenario %d: ...", i);
+            List<StepDescriptor> stepDescriptors = steps.stream()
+                    .map((description) -> findMethod(bindings, description))
+                    .collect(Collectors.toList());
 
-
-            tests.add(DynamicTest.dynamicTest(scenario, () -> {
-                        System.out.println(colorize(scenario));
-                        for (StepDescriptor stepDescriptor : stepDescriptors) {
-                            System.out.println(colorize(stepDescriptor.description));
-                            stepDescriptor.method.invoke(stepDescriptor.instance);
-                        }
-                    })
-            );
+            return Collections.singletonList(buildTest(stepDescriptors));
+        } catch (Throwable t) {
+            return Collections.singletonList(
+                    DynamicTest.dynamicTest("?", () -> {
+                                Assertions.fail("Unable to launch: " + t.getMessage());
+                            }
+                    ));
         }
+    }
 
-        return tests;
+    private Class[] getBindingClasses() {
+        Bindings bindingsAnnotation = getClass().getAnnotation(Bindings.class);
+        if (bindingsAnnotation == null) {
+            throw new IllegalArgumentException("No bindings found");
+        }
+        return bindingsAnnotation.value();
+    }
+
+    private Map<Class, Object> instantiateBindings(Class[] bindingClasses) {
+        return Arrays.stream(bindingClasses)
+                .collect(Collectors.toMap(e -> e, e -> {
+                    try {
+                        return e.newInstance();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }));
+    }
+
+    private DynamicTest buildTest(List<StepDescriptor> stepDescriptors) {
+        String scenario = "Scenario: ...";
+
+        return DynamicTest.dynamicTest(scenario, () -> {
+            System.out.println(colorize(scenario));
+            for (StepDescriptor stepDescriptor : stepDescriptors) {
+                System.out.println(colorize(stepDescriptor.description));
+                stepDescriptor.method.invoke(stepDescriptor.instance);
+            }
+        });
     }
 
     private String colorize(String string) {
-        return "\u001b["       // Prefix
-                + "0"          // Brightness
-                + ";"          // Separator
-                + "32"         // Red foreground
-                + "m"          // Suffix
-                + string       // the text to output
-                + "\u001b[m "; // Prefix + Suffix to reset color
+        return new ColorizedString(ColorizedString.COLOR_BLUE, string).toString();
     }
 
-    private StepDescriptor findMethod(String description) {
-        for (Method method : getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Given.class)) {
-                if (method.getAnnotation(Given.class).value().equals(description)) {
-                    return new StepDescriptor(this, method, description);
+    private StepDescriptor findMethod(Map<Class, Object> bindings, String description) {
+        for (Class clazz : bindings.keySet()) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Given.class)) {
+                    if (method.getAnnotation(Given.class).value().equals(description)) {
+                        return new StepDescriptor(bindings.get(clazz), method, description);
+                    }
                 }
             }
         }
 
-        try {
-            MakeItFail makeItFail = fail(description);
-
-            return new StepDescriptor(makeItFail, makeItFail.getClass().getMethod("fail"), description);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return StepDescriptor.fail(description);
     }
-
-    private MakeItFail fail(final String description) {
-        return () -> Assertions.fail(String.format("Unable to find binding for '%s'", description));
-    }
-
-
-    @FunctionalInterface
-    interface MakeItFail {
-        void fail();
-    }
-
-    class StepDescriptor {
-        final Object instance;
-        final Method method;
-        final String description;
-
-        StepDescriptor(Object instance, Method method, String description) {
-            this.instance = instance;
-            this.method = method;
-            this.description = description;
-        }
-    }
-
-
 }
