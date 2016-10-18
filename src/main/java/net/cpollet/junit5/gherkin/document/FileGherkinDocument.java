@@ -1,4 +1,4 @@
-package net.cpollet.junit5.gherkin.gherkin;
+package net.cpollet.junit5.gherkin.document;
 
 import gherkin.AstBuilder;
 import gherkin.Parser;
