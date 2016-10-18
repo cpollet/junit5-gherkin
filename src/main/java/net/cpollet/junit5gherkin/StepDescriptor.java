@@ -12,7 +12,7 @@ public class StepDescriptor {
     final Method method;
     final String description;
 
-    StepDescriptor(Object instance, Method method, String description) {
+    public StepDescriptor(Object instance, Method method, String description) {
         this.instance = instance;
         this.method = method;
         this.description = description;

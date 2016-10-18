@@ -1,6 +1,12 @@
 package net.cpollet.junit5gherkin;
 
+import gherkin.AstBuilder;
+import gherkin.Parser;
+import gherkin.ast.GherkinDocument;
+import gherkin.pickles.Compiler;
+import gherkin.pickles.Pickle;
 import net.cpollet.junit5gherkin.annotations.Bindings;
+import net.cpollet.junit5gherkin.annotations.FeatureFilePath;
 import net.cpollet.junit5gherkin.annotations.Given;
 import net.cpollet.junit5gherkin.annotations.Step;
 import net.cpollet.junit5gherkin.annotations.Then;
@@ -12,6 +18,8 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,20 +48,45 @@ public abstract class GherkinSuite {
     @TestFactory
     Collection<DynamicTest> testSuite() {
         try {
-            Class[] bindingClasses = getBindingClasses();
+            String featurePath = getFeaturePath();
+            String featureAbsolutePath = absolutePath(featurePath);
 
-            // loop {
+            String content = new String(Files.readAllBytes(Paths.get(featureAbsolutePath)));
+
+            Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
+            GherkinDocument gherkinDocument = parser.parse(content);
+            List<Pickle> pickles = new Compiler().compile(gherkinDocument, featureAbsolutePath);
+
+
+            Class[] bindingClasses = getBindingClasses();
             Map<Class, Object> bindings = instantiateBindings(bindingClasses);
 
-            List<StepDescriptor> stepDescriptors = steps.stream()
-                    .map((description) -> findMethodInBindings(bindings, description))
+            return pickles.stream()
+                    .map(pickle -> pickle.getSteps().stream()
+                            .map((pickleStep) -> stepDescriptor(bindings, pickleStep.getText()))
+                            .collect(Collectors.toList())
+                    )
+                    .map(this::buildTest)
                     .collect(Collectors.toList());
-            // }
-
-            return Collections.singletonList(buildTest(stepDescriptors));
         } catch (Throwable t) {
             return suiteFailure(t);
         }
+    }
+
+    private String absolutePath(String relativePath) {
+        if (relativePath.startsWith("classpath:")) {
+            return getClass().getClassLoader().getResource(relativePath.replaceFirst("classpath:/*", "")).getPath();
+        }
+
+        return relativePath;
+    }
+
+    private String getFeaturePath() {
+        FeatureFilePath featureFilePath = getClass().getAnnotation(FeatureFilePath.class);
+        if (featureFilePath == null) {
+            throw new IllegalArgumentException("No feature to execute");
+        }
+        return featureFilePath.value();
     }
 
     private Class[] getBindingClasses() {
@@ -95,17 +128,17 @@ public abstract class GherkinSuite {
         return "(no description)";
     }
 
-    private StepDescriptor findMethodInBindings(Map<Class, Object> bindings, String description) {
+    private StepDescriptor stepDescriptor(Map<Class, Object> bindings, String description) {
         for (Class clazz : bindings.keySet()) {
             Method method;
-            if ((method = findMethodInClass(clazz, description)) != null) {
+            if ((method = stepDescriptor(clazz, description)) != null) {
                 return new StepDescriptor(bindings.get(clazz), method, description);
             }
         }
         return StepDescriptor.fail(description);
     }
 
-    private Method findMethodInClass(Class clazz, String description) {
+    private Method stepDescriptor(Class clazz, String description) {
         for (Method method : clazz.getDeclaredMethods()) {
             if (hasMatchingAnnotation(method, description)) {
                 return method;

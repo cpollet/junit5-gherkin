@@ -11,20 +11,20 @@ import org.junit.jupiter.api.Assertions;
 public class StepBindings {
     private TestContext testContext = new TestContext();
 
-    @Given("Given: two integers 1 and 1")
+    @Given("two integers 1 and 1")
     public void prepare() {
         System.out.println("Let a=1 and b=1");
         testContext.a = 1;
         testContext.b = 1;
     }
 
-    @When("When: add the two integers")
+    @When("add the two integers")
     public void add() {
         System.out.println("Let result = a + b");
         testContext.result = testContext.a + testContext.b;
     }
 
-    @Then("Then: the result is 2")
+    @Then("the result is 2")
     public void result() {
         System.out.println("Result should be 2");
         Assertions.assertEquals(2, testContext.result);

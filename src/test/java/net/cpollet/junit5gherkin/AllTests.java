@@ -2,6 +2,7 @@ package net.cpollet.junit5gherkin;
 
 
 import net.cpollet.junit5gherkin.annotations.Bindings;
+import net.cpollet.junit5gherkin.annotations.FeatureFilePath;
 import net.cpollet.junit5gherkin.bindings.StepBindings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +19,7 @@ public class AllTests {
 
     @Nested
     @DisplayName("Feature 1")
+    @FeatureFilePath("classpath:/features/maths.feature")
     @Bindings(StepBindings.class)
     class Feature1 extends GherkinSuite {
     }
