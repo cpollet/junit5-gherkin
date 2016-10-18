@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin.annotations;
+package net.cpollet.junit5.gherkin.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Created by cpollet on 18.10.16.
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Bindings {
-    Class[] value();
+public @interface Step {
+    String value();
 }

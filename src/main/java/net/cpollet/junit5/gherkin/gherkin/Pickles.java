@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin.gherkin;
+package net.cpollet.junit5.gherkin.gherkin;
 
 import gherkin.pickles.Compiler;
 import gherkin.pickles.Pickle;

@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin;
+package net.cpollet.junit5.gherkin;
 
 import org.junit.jupiter.api.Assertions;
 

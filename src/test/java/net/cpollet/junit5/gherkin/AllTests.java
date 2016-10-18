@@ -1,9 +1,9 @@
-package net.cpollet.junit5gherkin;
+package net.cpollet.junit5.gherkin;
 
 
-import net.cpollet.junit5gherkin.annotations.Bindings;
-import net.cpollet.junit5gherkin.annotations.FeatureFilePath;
-import net.cpollet.junit5gherkin.bindings.StepBindings;
+import net.cpollet.junit5.gherkin.annotations.FeatureFilePath;
+import net.cpollet.junit5.gherkin.bindings.StepBindings;
+import net.cpollet.junit5.gherkin.annotations.Bindings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

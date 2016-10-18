@@ -1,8 +1,8 @@
-package net.cpollet.junit5gherkin.bindings;
+package net.cpollet.junit5.gherkin.bindings;
 
-import net.cpollet.junit5gherkin.annotations.Given;
-import net.cpollet.junit5gherkin.annotations.Then;
-import net.cpollet.junit5gherkin.annotations.When;
+import net.cpollet.junit5.gherkin.annotations.Given;
+import net.cpollet.junit5.gherkin.annotations.Then;
+import net.cpollet.junit5.gherkin.annotations.When;
 import org.junit.jupiter.api.Assertions;
 
 /**

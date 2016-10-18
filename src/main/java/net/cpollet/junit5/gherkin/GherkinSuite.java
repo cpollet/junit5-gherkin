@@ -1,13 +1,13 @@
-package net.cpollet.junit5gherkin;
+package net.cpollet.junit5.gherkin;
 
-import net.cpollet.junit5gherkin.annotations.Bindings;
-import net.cpollet.junit5gherkin.annotations.FeatureFilePath;
-import net.cpollet.junit5gherkin.annotations.Given;
-import net.cpollet.junit5gherkin.annotations.Step;
-import net.cpollet.junit5gherkin.annotations.Then;
-import net.cpollet.junit5gherkin.annotations.When;
-import net.cpollet.junit5gherkin.gherkin.FileGherkinDocument;
-import net.cpollet.junit5gherkin.gherkin.Pickles;
+import net.cpollet.junit5.gherkin.annotations.Bindings;
+import net.cpollet.junit5.gherkin.annotations.FeatureFilePath;
+import net.cpollet.junit5.gherkin.annotations.Given;
+import net.cpollet.junit5.gherkin.annotations.Step;
+import net.cpollet.junit5.gherkin.annotations.Then;
+import net.cpollet.junit5.gherkin.annotations.When;
+import net.cpollet.junit5.gherkin.gherkin.FileGherkinDocument;
+import net.cpollet.junit5.gherkin.gherkin.Pickles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

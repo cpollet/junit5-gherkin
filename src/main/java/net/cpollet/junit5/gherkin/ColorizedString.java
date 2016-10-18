@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin;
+package net.cpollet.junit5.gherkin;
 
 /**
  * Created by cpollet on 18.10.16.

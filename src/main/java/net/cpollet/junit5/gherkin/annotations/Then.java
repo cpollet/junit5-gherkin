@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin.annotations;
+package net.cpollet.junit5.gherkin.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Given {
+public @interface Then {
     String value();
 }

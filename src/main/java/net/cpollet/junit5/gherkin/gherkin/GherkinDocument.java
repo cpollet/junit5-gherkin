@@ -1,4 +1,4 @@
-package net.cpollet.junit5gherkin.gherkin;
+package net.cpollet.junit5.gherkin.gherkin;
 
 import java.io.FileNotFoundException;
 
