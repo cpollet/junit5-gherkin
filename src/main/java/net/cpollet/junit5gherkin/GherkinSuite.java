@@ -1,16 +1,13 @@
 package net.cpollet.junit5gherkin;
 
-import gherkin.AstBuilder;
-import gherkin.Parser;
-import gherkin.ast.GherkinDocument;
-import gherkin.pickles.Compiler;
-import gherkin.pickles.Pickle;
 import net.cpollet.junit5gherkin.annotations.Bindings;
 import net.cpollet.junit5gherkin.annotations.FeatureFilePath;
 import net.cpollet.junit5gherkin.annotations.Given;
 import net.cpollet.junit5gherkin.annotations.Step;
 import net.cpollet.junit5gherkin.annotations.Then;
 import net.cpollet.junit5gherkin.annotations.When;
+import net.cpollet.junit5gherkin.gherkin.FileGherkinDocument;
+import net.cpollet.junit5gherkin.gherkin.Pickles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +15,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,15 +44,10 @@ public abstract class GherkinSuite {
     @TestFactory
     Collection<DynamicTest> testSuite() {
         try {
-            String featurePath = getFeaturePath();
-            String featureAbsolutePath = absolutePath(featurePath);
+            Path featurePath = new ClasspathPath(getFeaturePath());
 
-            String content = new String(Files.readAllBytes(Paths.get(featureAbsolutePath)));
-
-            Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
-            GherkinDocument gherkinDocument = parser.parse(content);
-            List<Pickle> pickles = new Compiler().compile(gherkinDocument, featureAbsolutePath);
-
+            Pickles pickles = new Pickles(new FileGherkinDocument(featurePath));
+            pickles.compile();
 
             Class[] bindingClasses = getBindingClasses();
             Map<Class, Object> bindings = instantiateBindings(bindingClasses);
@@ -71,14 +62,6 @@ public abstract class GherkinSuite {
         } catch (Throwable t) {
             return suiteFailure(t);
         }
-    }
-
-    private String absolutePath(String relativePath) {
-        if (relativePath.startsWith("classpath:")) {
-            return getClass().getClassLoader().getResource(relativePath.replaceFirst("classpath:/*", "")).getPath();
-        }
-
-        return relativePath;
     }
 
     private String getFeaturePath() {
