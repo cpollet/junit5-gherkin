@@ -23,57 +23,57 @@ public class DefaultStepMap implements StepMap {
     }
 
     @Override
-    public ExecutableStep step(String scenarioLine) {
+    public ExecutableStep step(String stepText) {
         for (Class clazz : bindings.keySet()) {
             Method method;
-            if ((method = method(clazz, scenarioLine)) != null) {
-                return new ExecutableStep(new Target(bindings.get(clazz), method), scenarioLine, methodPatterns.get(method));
+            if ((method = method(clazz, stepText)) != null) {
+                return new ExecutableStep(new Target(bindings.get(clazz), method), stepText, methodPatterns.get(method));
             }
         }
-        return ExecutableStep.fail(scenarioLine);
+        return ExecutableStep.fail(stepText);
     }
 
-    private Method method(Class clazz, String description) {
+    private Method method(Class clazz, String stepText) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (hasMatchingAnnotation(method, description)) {
+            if (hasMatchingAnnotation(method, stepText)) {
                 return method;
             }
         }
         return null;
     }
 
-    private boolean hasMatchingAnnotation(Method method, String description) {
-        return hasMatchingGivenAnnotation(method, description)
-                || hasMatchingWhenAnnotation(method, description)
-                || hasMatchingThenAnnotation(method, description)
-                || hasMatchingStepAnnotation(method, description);
+    private boolean hasMatchingAnnotation(Method method, String stepText) {
+        return hasMatchingGivenAnnotation(method, stepText)
+                || hasMatchingWhenAnnotation(method, stepText)
+                || hasMatchingThenAnnotation(method, stepText)
+                || hasMatchingStepAnnotation(method, stepText);
     }
 
-    private boolean hasMatchingGivenAnnotation(Method method, String description) {
+    private boolean hasMatchingGivenAnnotation(Method method, String stepText) {
         return method.isAnnotationPresent(Given.class)
-                && matches(method, method.getAnnotation(Given.class).value(), description);
+                && matches(method, method.getAnnotation(Given.class).value(), stepText);
     }
 
-    private boolean hasMatchingWhenAnnotation(Method method, String description) {
+    private boolean hasMatchingWhenAnnotation(Method method, String stepText) {
         return method.isAnnotationPresent(When.class)
-                && matches(method, method.getAnnotation(When.class).value(), description);
+                && matches(method, method.getAnnotation(When.class).value(), stepText);
     }
 
-    private boolean hasMatchingThenAnnotation(Method method, String description) {
+    private boolean hasMatchingThenAnnotation(Method method, String stepText) {
         return method.isAnnotationPresent(Then.class)
-                && matches(method, method.getAnnotation(Then.class).value(), description);
+                && matches(method, method.getAnnotation(Then.class).value(), stepText);
     }
 
-    private boolean hasMatchingStepAnnotation(Method method, String description) {
+    private boolean hasMatchingStepAnnotation(Method method, String stepText) {
         return method.isAnnotationPresent(Step.class)
-                && matches(method, method.getAnnotation(Step.class).value(), description);
+                && matches(method, method.getAnnotation(Step.class).value(), stepText);
     }
 
-    private boolean matches(Method method, String annotation, String description) {
+    private boolean matches(Method method, String annotation, String stepText) {
         if (!methodPatterns.containsKey(method)) {
             methodPatterns.put(method, Pattern.compile(annotation));
         }
 
-        return methodPatterns.get(method).matcher(description).matches();
+        return methodPatterns.get(method).matcher(stepText).matches();
     }
 }

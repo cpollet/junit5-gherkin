@@ -13,17 +13,17 @@ import java.util.regex.Pattern;
  */
 public class ExecutableStep {
     private final Target target;
-    private final String scenarioLine;
+    private final String stepText;
     private final Pattern pattern;
 
 
-    private ExecutableStep(Target target, String scenarioLine) {
-        this(target, scenarioLine, null);
+    private ExecutableStep(Target target, String stepText) {
+        this(target, stepText, null);
     }
 
-    public ExecutableStep(Target target, String scenarioLine, Pattern pattern) {
+    public ExecutableStep(Target target, String stepText, Pattern pattern) {
         this.target = target;
-        this.scenarioLine = scenarioLine;
+        this.stepText = stepText;
         this.pattern = pattern;
     }
 
@@ -37,11 +37,11 @@ public class ExecutableStep {
         }
     }
 
-    private List<String> parameters() {
-        Matcher matcher = pattern.matcher(scenarioLine);
+    private List<Object> parameters() {
+        Matcher matcher = pattern.matcher(stepText);
 
         if (matcher.find()) {
-            List<String> parameters = new ArrayList<>(matcher.groupCount());
+            List<Object> parameters = new ArrayList<>(matcher.groupCount());
             for (int i = 1; i <= matcher.groupCount(); i++) {
                 parameters.add(matcher.group(i));
             }
@@ -52,11 +52,11 @@ public class ExecutableStep {
     }
 
     public void execute() {
-        target.invoke(parameters().toArray());
+        target.invoke(parameters());
     }
 
     public String toString() {
-        return scenarioLine;
+        return stepText;
     }
 
     @FunctionalInterface

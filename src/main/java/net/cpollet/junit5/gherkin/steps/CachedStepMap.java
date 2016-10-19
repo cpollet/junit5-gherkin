@@ -16,11 +16,11 @@ public class CachedStepMap implements StepMap {
     }
 
     @Override
-    public ExecutableStep step(String scenarioLine) {
-        if (!cache.containsKey(scenarioLine)) {
-            cache.put(scenarioLine, stepMap.step(scenarioLine));
+    public ExecutableStep step(String stepText) {
+        if (!cache.containsKey(stepText)) {
+            cache.put(stepText, stepMap.step(stepText));
         }
 
-        return cache.get(scenarioLine);
+        return cache.get(stepText);
     }
 }
