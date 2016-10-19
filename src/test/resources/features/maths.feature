@@ -5,11 +5,6 @@ Feature: Arithmetic operations
     When add the two integers
     Then the result is 2
 
-#  Scenario: Integer subtraction
-#    Given two integers 1 and 1
-#    When subtract the first to the second
-#    Then the result is 0
-
   Scenario Outline: Integer addition
     Given two integers <a> and <b>
     When add the two integers

@@ -1,7 +1,6 @@
 package net.cpollet.junit5.gherkin;
 
 import net.cpollet.junit5.gherkin.annotations.Given;
-import net.cpollet.junit5.gherkin.annotations.Step;
 import net.cpollet.junit5.gherkin.annotations.Then;
 import net.cpollet.junit5.gherkin.annotations.When;
 import org.junit.jupiter.api.Assertions;
@@ -16,21 +15,21 @@ import java.util.regex.Pattern;
 /**
  * Created by cpollet on 18.10.16.
  */
-public class StepDescriptor {
-    final Object instance;
+public class Step {
+    final Object targetBindingInstance;
     final Method method;
-    final String description;
+    final String scenarioLine;
 
-    public StepDescriptor(Object instance, Method method, String description) {
-        this.instance = instance;
+    public Step(Object targetBindingInstance, Method method, String scenarioLine) {
+        this.targetBindingInstance = targetBindingInstance;
         this.method = method;
-        this.description = description;
+        this.scenarioLine = scenarioLine;
     }
 
-    public static StepDescriptor fail(String message) {
+    public static Step fail(String message) {
         try {
             FailFunction failFunction = () -> Assertions.fail(String.format("Unable to find binding for '%s'", message));
-            return new StepDescriptor(failFunction, failFunction.getClass().getMethod("fail"), message);
+            return new Step(failFunction, failFunction.getClass().getMethod("fail"), message);
         } catch (NoSuchMethodException e) {
             // this cannot happen since the method we get exists by design
             throw new Error(e);
@@ -40,7 +39,7 @@ public class StepDescriptor {
     public List<String> parameters() {
         String annotation = stepAnnotation();
         Pattern pattern = Pattern.compile(annotation);
-        Matcher matcher = pattern.matcher(description);
+        Matcher matcher = pattern.matcher(scenarioLine);
 
         if (matcher.find()) {
             List<String> parameters = new ArrayList<>(matcher.groupCount());
@@ -63,8 +62,8 @@ public class StepDescriptor {
         if (method.getAnnotation(Then.class) != null) {
             return method.getAnnotation(Then.class).value();
         }
-        if (method.getAnnotation(Step.class) != null) {
-            return method.getAnnotation(Step.class).value();
+        if (method.getAnnotation(net.cpollet.junit5.gherkin.annotations.Step.class) != null) {
+            return method.getAnnotation(net.cpollet.junit5.gherkin.annotations.Step.class).value();
         }
         throw new IllegalStateException("");
     }
