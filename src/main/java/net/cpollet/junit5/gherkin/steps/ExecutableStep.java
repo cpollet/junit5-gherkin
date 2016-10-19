@@ -16,7 +16,6 @@ public class ExecutableStep {
     private final String stepText;
     private final Pattern pattern;
 
-
     private ExecutableStep(Target target, String stepText) {
         this(target, stepText, null);
     }
@@ -37,11 +36,11 @@ public class ExecutableStep {
         }
     }
 
-    private List<Object> parameters() {
+    private List<String> parameters() {
         Matcher matcher = pattern.matcher(stepText);
 
         if (matcher.find()) {
-            List<Object> parameters = new ArrayList<>(matcher.groupCount());
+            List<String> parameters = new ArrayList<>(matcher.groupCount());
             for (int i = 1; i <= matcher.groupCount(); i++) {
                 parameters.add(matcher.group(i));
             }

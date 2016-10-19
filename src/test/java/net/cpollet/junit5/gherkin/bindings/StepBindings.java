@@ -12,10 +12,10 @@ public class StepBindings {
     private TestContext testContext = new TestContext();
 
     @Given("two integers (\\d) and (\\d)")
-    public void prepare(String a, String b) {
+    public void prepare(Integer a, Integer b) {
         System.out.println("Let a=1 and b=1");
-        testContext.a = Integer.valueOf(a);
-        testContext.b = Integer.valueOf(b);
+        testContext.a = a;
+        testContext.b = b;
     }
 
     @When("add the two integers")
@@ -25,9 +25,9 @@ public class StepBindings {
     }
 
     @Then("the result is (\\d)")
-    public void result(String r) {
+    public void result(Integer r) {
         System.out.println("Result should be 2");
-        Assertions.assertEquals((int) Integer.valueOf(r), testContext.result);
+        Assertions.assertEquals((int) r, testContext.result);
     }
 
     private class TestContext {
