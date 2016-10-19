@@ -1,4 +1,4 @@
-package net.cpollet.junit5.gherkin;
+package net.cpollet.junit5.gherkin.steps;
 
 import net.cpollet.junit5.gherkin.annotations.Given;
 import net.cpollet.junit5.gherkin.annotations.Step;

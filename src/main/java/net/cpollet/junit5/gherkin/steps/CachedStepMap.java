@@ -1,4 +1,4 @@
-package net.cpollet.junit5.gherkin;
+package net.cpollet.junit5.gherkin.steps;
 
 import java.util.HashMap;
 import java.util.Map;

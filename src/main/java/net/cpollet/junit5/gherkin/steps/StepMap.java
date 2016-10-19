@@ -1,4 +1,4 @@
-package net.cpollet.junit5.gherkin;
+package net.cpollet.junit5.gherkin.steps;
 
 /**
  * Created by cpollet on 19.10.16.
