@@ -114,14 +114,14 @@ public abstract class GherkinSuite {
     private StepDescriptor stepDescriptor(Map<Class, Object> bindings, String description) {
         for (Class clazz : bindings.keySet()) {
             Method method;
-            if ((method = stepDescriptor(clazz, description)) != null) {
+            if ((method = method(clazz, description)) != null) {
                 return new StepDescriptor(bindings.get(clazz), method, description);
             }
         }
         return StepDescriptor.fail(description);
     }
 
-    private Method stepDescriptor(Class clazz, String description) {
+    private Method method(Class clazz, String description) {
         for (Method method : clazz.getDeclaredMethods()) {
             if (hasMatchingAnnotation(method, description)) {
                 return method;
@@ -138,19 +138,23 @@ public abstract class GherkinSuite {
     }
 
     private boolean hasMatchingGivenAnnotation(Method method, String description) {
-        return method.isAnnotationPresent(Given.class) && method.getAnnotation(Given.class).value().equals(description);
+        return method.isAnnotationPresent(Given.class) && matches(method.getAnnotation(Given.class).value(), description);
+    }
+
+    private boolean matches(String annotation, String description) {
+        return description.matches(annotation);
     }
 
     private boolean hasMatchingWhenAnnotation(Method method, String description) {
-        return method.isAnnotationPresent(When.class) && method.getAnnotation(When.class).value().equals(description);
+        return method.isAnnotationPresent(When.class) && matches(method.getAnnotation(When.class).value(), description);
     }
 
     private boolean hasMatchingThenAnnotation(Method method, String description) {
-        return method.isAnnotationPresent(Then.class) && method.getAnnotation(Then.class).value().equals(description);
+        return method.isAnnotationPresent(Then.class) && matches(method.getAnnotation(Then.class).value(), description);
     }
 
     private boolean hasMatchingStepAnnotation(Method method, String description) {
-        return method.isAnnotationPresent(Step.class) && method.getAnnotation(Step.class).value().equals(description);
+        return method.isAnnotationPresent(Step.class) && matches(method.getAnnotation(Step.class).value(), description);
     }
 
     private DynamicTest buildTest(List<StepDescriptor> stepDescriptors) {
@@ -159,8 +163,11 @@ public abstract class GherkinSuite {
         return DynamicTest.dynamicTest(scenario, () -> {
             System.out.println(colorize(scenario));
             for (StepDescriptor stepDescriptor : stepDescriptors) {
+
+                stepDescriptor.parameters().forEach(System.out::println);
+
                 System.out.println(colorize(stepDescriptor.description));
-                stepDescriptor.method.invoke(stepDescriptor.instance);
+                stepDescriptor.method.invoke(stepDescriptor.instance, stepDescriptor.parameters().toArray());
             }
         });
     }

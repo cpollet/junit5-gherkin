@@ -23,10 +23,4 @@ public class AllTests {
     @Bindings(StepBindings.class)
     class Feature1 extends GherkinSuite {
     }
-
-    @Nested
-    @DisplayName("Feature 2")
-    @Bindings(StepBindings.class)
-    class Feature2 extends GherkinSuite {
-    }
 }
