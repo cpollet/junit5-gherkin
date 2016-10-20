@@ -1,5 +1,6 @@
 package net.cpollet.junit5.gherkin.steps;
 
+import net.cpollet.junit5.gherkin.Converter;
 import net.cpollet.junit5.gherkin.annotations.Given;
 import net.cpollet.junit5.gherkin.annotations.Step;
 import net.cpollet.junit5.gherkin.annotations.Then;
@@ -15,10 +16,12 @@ import java.util.regex.Pattern;
  */
 public class DefaultStepMap implements StepMap {
     private final Map<Class, Object> bindings;
+    private final Converter converter;
     private final Map<Method, Pattern> methodPatterns;
 
-    public DefaultStepMap(Map<Class, Object> bindings) {
+    public DefaultStepMap(Map<Class, Object> bindings, Converter converter) {
         this.bindings = bindings;
+        this.converter = converter;
         this.methodPatterns = new HashMap<>();
     }
 
@@ -27,7 +30,7 @@ public class DefaultStepMap implements StepMap {
         for (Class clazz : bindings.keySet()) {
             Method method;
             if ((method = method(clazz, stepText)) != null) {
-                return new ExecutableStep(new Target(bindings.get(clazz), method), stepText, methodPatterns.get(method));
+                return new ExecutableStep(new Target(bindings.get(clazz), method, converter), stepText, methodPatterns.get(method));
             }
         }
         return ExecutableStep.fail(stepText);

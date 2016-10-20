@@ -9,6 +9,7 @@ public class ColorizedString {
     private static final String SUFFIX = "m";
     private final Color color;
     private final String string;
+
     public ColorizedString(Color color, String string) {
         this.color = color;
         this.string = string;

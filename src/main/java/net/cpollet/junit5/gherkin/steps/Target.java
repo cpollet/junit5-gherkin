@@ -1,33 +1,29 @@
 package net.cpollet.junit5.gherkin.steps;
 
+import net.cpollet.junit5.gherkin.Converter;
+
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Created by cpollet on 19.10.16.
  */
 public class Target {
-    private static final Map<Class<?>, Function<String, ?>> converters = new HashMap<>();
-
-    static {
-        converters.put(String.class, Function.identity());
-        converters.put(Object.class, Function.identity());
-        converters.put(Integer.class, Integer::valueOf);
-    }
-
     private final Object instance;
     private final Method method;
+    private final Converter converter;
 
     public Target(Object instance, Method method) {
+        this(instance, method, null);
+    }
+
+    public Target(Object instance, Method method, Converter converter) {
         this.instance = instance;
         this.method = method;
+        this.converter = converter;
     }
 
     public void invoke(List<String> parameters) {
-
         Object[] actualParameters = cast(method.getParameterTypes(), parameters);
 
         try {
@@ -41,7 +37,10 @@ public class Target {
         Object[] castParameters = new Object[parameters.size()];
 
         for (int i = 0; i < parameters.size(); i++) {
-            castParameters[i] = converters.get(parameterTypes[i]).apply(parameters.get(i));
+            String parameterValue = parameters.get(i);
+            Class<?> parameterType = parameterTypes[i];
+
+            castParameters[i] = converter.convert(parameterValue, parameterType);
         }
 
         return castParameters;

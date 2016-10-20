@@ -35,7 +35,8 @@ public abstract class GherkinSuite {
             pickles.compile();
 
             Map<Class, Object> bindings = instantiateBindings(getBindingClasses());
-            StepMap stepMap = new CachedStepMap(new DefaultStepMap(bindings));
+
+            StepMap stepMap = new CachedStepMap(new DefaultStepMap(bindings, new Converter()));
 
             return pickles.stream()
                     .map(pickle -> pickle.getSteps().stream()
