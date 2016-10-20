@@ -109,6 +109,6 @@ public abstract class GherkinSuite {
     }
 
     private String colorize(String string) {
-        return new ColorizedString(ColorizedString.COLOR_BLUE, string).toString();
+        return new ColorizedString(ColorizedString.Color.BLUE, string).toString();
     }
 }

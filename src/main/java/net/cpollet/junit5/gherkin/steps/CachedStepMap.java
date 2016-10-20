@@ -12,7 +12,7 @@ public class CachedStepMap implements StepMap {
 
     public CachedStepMap(DefaultStepMap stepMap) {
         this.stepMap = stepMap;
-        cache = new HashMap<>();
+        this.cache = new HashMap<>();
     }
 
     @Override
