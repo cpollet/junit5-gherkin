@@ -4,13 +4,14 @@ import gherkin.pickles.Compiler;
 import gherkin.pickles.Pickle;
 
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
  * Created by cpollet on 18.10.16.
  */
-public class Pickles {
+public class Pickles implements Iterable<Pickle> {
     private final GherkinDocument gherkinDocument;
     private final Compiler compiler;
     private List<Pickle> pickles;
@@ -34,5 +35,9 @@ public class Pickles {
 
     public Stream<Pickle> stream() {
         return pickles().stream();
+    }
+
+    public Iterator<Pickle> iterator() {
+        return pickles().iterator();
     }
 }

@@ -16,7 +16,7 @@ import java.util.function.Function;
  * Created by cpollet on 20.10.16.
  */
 public class Converter {
-    public static final String ISO_DATETIME = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private final static String ISO_DATETIME = "yyyy-MM-dd'T'HH:mm:ssZ";
     private final Map<Class<?>, Function<String, ?>> converters;
 
     public Converter() {

@@ -6,7 +6,6 @@ import net.cpollet.junit5.gherkin.document.FileGherkinDocument;
 import net.cpollet.junit5.gherkin.document.Pickles;
 import net.cpollet.junit5.gherkin.steps.CachedStepMap;
 import net.cpollet.junit5.gherkin.steps.DefaultStepMap;
-import net.cpollet.junit5.gherkin.steps.ExecutableStep;
 import net.cpollet.junit5.gherkin.steps.StepMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +38,12 @@ public abstract class GherkinSuite {
             StepMap stepMap = new CachedStepMap(new DefaultStepMap(bindings, new Converter()));
 
             return pickles.stream()
-                    .map(pickle -> pickle.getSteps().stream()
-                            .map((pickleStep) -> stepMap.step(pickleStep.getText()))
-                            .collect(Collectors.toList())
+                    .map(pickle -> new Scenario(
+                                    pickle.getName(),
+                                    pickle.getSteps().stream()
+                                            .map((pickleStep) -> stepMap.step(pickleStep.getText()))
+                                            .collect(Collectors.toList())
+                            )
                     )
                     .map(this::buildTest)
                     .collect(Collectors.toList());
@@ -94,22 +96,13 @@ public abstract class GherkinSuite {
             return extractMessage(t.getCause());
         }
 
-        return "(no scenarioLine)";
+        return "(no step)";
     }
 
-    private DynamicTest buildTest(List<ExecutableStep> executableSteps) {
-        String scenario = "Scenario: ...";
-
-        return DynamicTest.dynamicTest(scenario, () -> {
-            System.out.println(colorize(scenario));
-            for (ExecutableStep executableStep : executableSteps) {
-                System.out.println(colorize(executableStep.toString()));
-                executableStep.execute();
-            }
+    private DynamicTest buildTest(Scenario scenario) {
+        return DynamicTest.dynamicTest(scenario.name(), () -> {
+            scenario.displayHeader();
+            scenario.execute();
         });
-    }
-
-    private String colorize(String string) {
-        return new ColorizedString(ColorizedString.Color.BLUE, string).toString();
     }
 }
