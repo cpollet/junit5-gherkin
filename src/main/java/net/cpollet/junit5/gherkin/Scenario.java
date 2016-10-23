@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by cpollet on 20.10.16.
  */
-class Scenario {
+public class Scenario {
     private final String name;
     private final List<ExecutableStep> steps;
 
